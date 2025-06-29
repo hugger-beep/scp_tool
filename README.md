@@ -465,10 +465,7 @@ The tool provides debug output when values are unexpectedly zero, helping identi
 - Use `--export-json` to cache results for repeated analysis
 - Cross-account role assumption adds authentication overhead
 
-### Version Information
-Author: Anon  
-Version: 2.2 (Enhanced)  
-Last Updated: 2025-01-29
+
 
 ## Integration
 
