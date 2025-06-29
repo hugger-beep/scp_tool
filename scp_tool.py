@@ -3639,10 +3639,63 @@ def main():
             print(f"❌ Error: {e}")
     
     if args.policy_complexity:
-        print("\n📏 Policy complexity analysis...")
+        print("\n📏 POLICY COMPLEXITY ANALYSIS")
+        print("="*50)
         try:
             complexity_data = analyzer.analyze_policy_complexity()
-            print(f"📏 Large policies: {len(complexity_data['large_policies'])} | 🔀 Complex: {len(complexity_data['complex_policies'])}")
+            
+            print(f"\n📊 SUMMARY:")
+            print(f"   Total policies analyzed: {len(policies)}")
+            print(f"   Large policies (>4000 chars): {len(complexity_data['large_policies'])}")
+            print(f"   Complex policies (>10 statements): {len(complexity_data['complex_policies'])}")
+            print(f"   Total size across all policies: {complexity_data['total_size']:,} characters")
+            print(f"   Average policy size: {complexity_data['total_size'] // len(policies) if policies else 0:,} characters")
+            
+            # Show large policies
+            if complexity_data['large_policies']:
+                print(f"\n📏 LARGE POLICIES ({len(complexity_data['large_policies'])}):")                
+                for policy in complexity_data['large_policies']:
+                    print(f"   📄 {policy['policy_name']}")
+                    print(f"      Size: {policy['size']:,} characters")
+                    print(f"      Statements: {policy['statements']}")
+                    if policy['size'] > 4500:
+                        print(f"      ⚠️  Approaching AWS limit (5120 chars)")
+                    print()
+            
+            # Show complex policies
+            if complexity_data['complex_policies']:
+                print(f"\n🔀 COMPLEX POLICIES ({len(complexity_data['complex_policies'])}):")                
+                for policy in complexity_data['complex_policies']:
+                    print(f"   📋 {policy['policy_name']}")
+                    print(f"      Statements: {policy['statements']}")
+                    print(f"      Size: {policy['size']:,} characters")
+                    if policy['statements'] > 20:
+                        print(f"      ⚠️  Very complex - consider splitting")
+                    print()
+            
+            # Show size warnings
+            if complexity_data['size_warnings']:
+                print(f"\n⚠️  SIZE WARNINGS ({len(complexity_data['size_warnings'])}):")                
+                for warning in complexity_data['size_warnings']:
+                    print(f"   🚨 {warning}")
+            
+            # Recommendations
+            print(f"\n💡 RECOMMENDATIONS:")
+            if len(complexity_data['large_policies']) > 0:
+                print(f"   • {len(complexity_data['large_policies'])} policies are approaching size limits")
+                print(f"   • Consider breaking large policies into smaller, focused policies")
+            
+            if len(complexity_data['complex_policies']) > 0:
+                print(f"   • {len(complexity_data['complex_policies'])} policies have many statements")
+                print(f"   • Complex policies are harder to maintain and troubleshoot")
+            
+            if complexity_data['total_size'] > 100000:
+                print(f"   • Total policy size is {complexity_data['total_size']:,} characters")
+                print(f"   • Consider policy consolidation and cleanup")
+            
+            if not complexity_data['large_policies'] and not complexity_data['complex_policies']:
+                print(f"   ✅ All policies are within reasonable size and complexity limits")
+                print(f"   ✅ No immediate optimization needed")
             
             if args.export_json:
                 export_data = {
