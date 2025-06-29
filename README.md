@@ -476,9 +476,29 @@ The tool provides debug output when values are unexpectedly zero, helping identi
     "organization_id": "o-example123",
     "total_policies": 57,
     "blocking_report": {
-        "service_blocks": {...},
-        "account_impacts": {...},
-        "ou_impacts": {...}
+        "service_blocks": {
+            "s3": 45,
+            "iam": 32,
+            "ec2": 28
+        },
+        "account_impacts": {
+            "123456789012": [
+                {
+                    "action": "s3:DeleteBucket",
+                    "policy_name": "RestrictivePolicy",
+                    "severity": "HIGH"
+                }
+            ]
+        },
+        "ou_impacts": {
+            "ou-root-123456": [
+                {
+                    "action": "iam:CreateUser",
+                    "policy_name": "IAMRestrictions",
+                    "severity": "CRITICAL"
+                }
+            ]
+        }
     }
 }
 ```
